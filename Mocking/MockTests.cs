@@ -143,24 +143,15 @@ namespace Mocking
         {
 
 			//Arrange
-			const int hours = 42;
+			double expectedResult = ((1000 * 42) + (750 * 42) + (500 * 42)) / 3;
 
 			var mock = new Mock<IEmployeeRepository>();
 			mock.Setup(m => m.FindAllEmployees()).Returns(() => new List<Employee> { new Employee() { Id = 1, Name = "Hans", Type = "Teacher", Wage = 1000 }, new Employee() { Id = 2, Name = "Tove", Type = "Teacher", Wage = 750 }, new Employee() { Id = 3, Name = "Lene", Type = "Teacher", Wage = 500 } });
 
-			double expectedResult = ((1000 * 42) + (750 * 42) + (500 * 42))/3;
-			double AverageWeeklySalary = 0.0d;
-
 			//Act
-			List<Employee> employees = mock.Object.FindAllEmployees();
-			double num = 0d;
-			foreach (Employee e in employees)
-			{
-				num += e.CalculateWeeklySalary(hours, e.Wage);
-			}
-			AverageWeeklySalary = num/3;
+			List<Employee> e = mock.Object.FindAllEmployees();
 			//Assert
-			Assert.AreEqual(expectedResult, AverageWeeklySalary);
+			Assert.AreEqual(expectedResult, EmployeeRepository.CalculateAverageWeeklySalary(e));
 
 			//implement your own logic
 			//use mocks
@@ -187,6 +178,51 @@ namespace Mocking
             //Assert
             Assert.AreEqual(1, admin.NumMessagesCreated);
         }
+
+		[TestMethod]
+		public void AfterLoginAdminCanEditEmployeeName()
+		{
+			//Arrange
+			var admin = new User() { UserName = "sist@eal.dk", Password = "!QAZ2wsx" };
+
+			var mockLogin = new Mock<ILoginModule>();
+			mockLogin.Setup(x => x.Login(admin))
+				.Callback(() => { admin.Rights = Rights.Full; });
+
+			var mock = new Mock<IEmployeeRepository>();
+			mock.Setup(m => m.LoadEmployee(1)).Returns(() => new Employee() { Id = 1, Name = "Peter", Type = "Slave", Wage = 20 });
+			Employee e = mock.Object.LoadEmployee(1);
+
+			//Act
+			mockLogin.Object.Login(admin);
+			admin.EditEmployeeName(e, "Simon");
+
+			//Assert
+			Assert.AreEqual("Simon", e.Name);
+		}
+
+		[TestMethod]
+		public void AfterLoginAdminCanEditEmployeeWage()
+		{
+			//Arrange
+			var admin = new User() { UserName = "sist@eal.dk", Password = "!QAZ2wsx" };
+
+			var mockLogin = new Mock<ILoginModule>();
+			mockLogin.Setup(x => x.Login(admin))
+				.Callback(() => { admin.Rights = Rights.Full; });
+
+			var mock = new Mock<IEmployeeRepository>();
+			mock.Setup(m => m.LoadEmployee(1)).Returns(() => new Employee() { Id = 1, Name = "Peter", Type = "Slave", Wage = 20 });
+			Employee e = mock.Object.LoadEmployee(1);
+
+			//Act
+			mockLogin.Object.Login(admin);
+			admin.EditEmployeeWage(e, 1000);
+
+			//Assert
+			Assert.AreEqual(1000, e.Wage);
+		}
+
 		/*
         [TestMethod]
         public void DoYourOwnLogic1()
@@ -225,5 +261,5 @@ namespace Mocking
             throw new NotImplementedException();
         }
 		*/
-    }
+	}
 }

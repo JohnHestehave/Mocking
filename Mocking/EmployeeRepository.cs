@@ -48,15 +48,15 @@ namespace Mocking
 		{
 			return Employees;
 		}
-
-		public double AverageWeeklySalary(int hours = 42)
+		
+		public static double CalculateAverageWeeklySalary(List<Employee> em)
 		{
 			double num = 0d;
-			foreach (Employee e in Employees)
+			foreach (Employee e in em)
 			{
-				num += e.CalculateWeeklySalary(hours, e.Wage);
+				num += e.CalculateWeeklySalary(42, e.Wage);
 			}
-			num /= Employees.Count();
+			num /= em.Count();
 			return num;
 		}
 

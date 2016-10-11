@@ -14,6 +14,5 @@ namespace Mocking
         void SaveEmployee(Employee employee);
         Employee LoadEmployee(int id);
         List<Employee> FindAllEmployees();
-
     }
 }

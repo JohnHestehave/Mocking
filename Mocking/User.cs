@@ -24,5 +24,22 @@ namespace Mocking
 		{
 			return "Here is the list";
 		}
+
+		public void EditEmployeeName(Employee e, string newname)
+		{
+			if(this.Rights == Rights.Full)
+			{
+				e.Name = newname;
+			}else
+			{
+				throw new Exception("You do not have the rights to do that!");
+			}
+		}
+
+		public void EditEmployeeWage(Employee e, int newwage)
+		{
+			e.Wage = newwage;
+		}
+
 	}
 }
